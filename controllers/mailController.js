@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const Mail = require("../models/User");
+const Mail = require("../models/Mail");
 
 const createMail = async (req, res) => {
   const user = req.user;
@@ -10,13 +10,14 @@ const createMail = async (req, res) => {
       .status(409)
       .json({ success: false, message: "To User Doesn't Exist" });
   }
-  const mail = await Mail.create({
-    sender: user.email,
-    receiver: to,
+  const mail = new Mail({
+    sender: user._id,
+    receiver: toUserExists._id,
     body: message,
     subject: subject,
   });
-  res.json({ success: true, message: "Mail Created", mail });
+  await mail.save();
+  res.json({ success: true, message: "Mail Created" });
 };
 
 exports.controller = {
