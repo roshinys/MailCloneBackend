@@ -6,5 +6,10 @@ const mailController = require("../controllers/mailController");
 
 router.post("/", authMiddleware, mailController.controller.createMail);
 router.get("/inbox", authMiddleware, mailController.controller.getInboxMail);
+router.put(
+  "/:mailId",
+  authMiddleware,
+  mailController.controller.updateReadMail
+);
 
 module.exports = router;

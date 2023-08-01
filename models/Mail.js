@@ -6,6 +6,7 @@ const mailSchema = new mongoose.Schema({
   body: { type: String },
   subject: { type: String },
   createdAt: { type: Date, default: Date.now },
+  isRead: { type: Boolean, default: false },
 });
 
 const Mail = mongoose.model("mail", mailSchema);
