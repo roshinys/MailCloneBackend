@@ -17,7 +17,7 @@ const createMail = async (req, res) => {
     subject: subject,
   });
   await mail.save();
-  res.json({ success: true, message: "Mail Created" });
+  res.json({ success: true, message: "Mail Created", mail });
 };
 
 exports.controller = {
