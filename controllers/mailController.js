@@ -75,8 +75,26 @@ const updateReadMail = async (req, res) => {
   }
 };
 
+const getMailById = async (req, res) => {
+  try {
+    const mailId = req.params.mailId;
+    const mail = await Mail.findById(mailId);
+    return res.json({
+      success: true,
+      message: "Mail Read Updated",
+      mail,
+    });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Please try again" });
+  }
+};
+
 exports.controller = {
   createMail,
   getInboxMail,
   updateReadMail,
+  getMailById,
 };

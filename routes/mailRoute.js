@@ -11,5 +11,6 @@ router.put(
   authMiddleware,
   mailController.controller.updateReadMail
 );
+router.get("/:mailId", authMiddleware, mailController.controller.getMailById);
 
 module.exports = router;
