@@ -63,6 +63,40 @@ const getInboxMail = async (req, res) => {
   }
 };
 
+const getSentMail = async (req, res) => {
+  try {
+    const user = req.user;
+    const allMails = await Mail.find({
+      sender: user._id,
+    })
+      .populate("receiver", "email")
+      .sort({ createdAt: -1 });
+    const sentMails = allMails.map((email) => {
+      const date = new Date(email.createdAt);
+      const options = {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      };
+      const formattedTime = date.toLocaleString("en-US", options);
+      return {
+        ...email._doc,
+        createdAt: formattedTime,
+      };
+    });
+    res.json({
+      success: true,
+      message: "All Sent Mails",
+      sentMails,
+    });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Please try again" });
+  }
+};
+
 const updateReadMail = async (req, res) => {
   try {
     const mailId = req.params.mailId;
@@ -130,6 +164,7 @@ const deleteMailById = async (req, res) => {
 exports.controller = {
   createMail,
   getInboxMail,
+  getSentMail,
   updateReadMail,
   getMailById,
   deleteMailById,
