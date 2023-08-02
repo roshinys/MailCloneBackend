@@ -12,5 +12,10 @@ router.put(
   mailController.controller.updateReadMail
 );
 router.get("/:mailId", authMiddleware, mailController.controller.getMailById);
+router.delete(
+  "/:mailId",
+  authMiddleware,
+  mailController.controller.deleteMailById
+);
 
 module.exports = router;

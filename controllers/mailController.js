@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Mail = require("../models/Mail");
+const mongoose = require("mongoose");
 
 const createMail = async (req, res) => {
   try {
@@ -12,8 +13,8 @@ const createMail = async (req, res) => {
         .json({ success: false, message: "To User Doesn't Exist" });
     }
     const mail = new Mail({
-      sender: user._id,
-      receiver: toUserExists._id,
+      sender: new mongoose.Types.ObjectId(user._id),
+      receiver: new mongoose.Types.ObjectId(toUserExists._id),
       body: message,
       subject: subject,
     });
@@ -32,7 +33,10 @@ const getInboxMail = async (req, res) => {
     const user = req.user;
     const allMails = await Mail.find({
       receiver: user._id,
-    }).sort({ createdAt: -1 });
+      deleted: false,
+    })
+      .populate("sender", "email")
+      .sort({ createdAt: -1 });
     const inboxMails = allMails.map((email) => {
       const date = new Date(email.createdAt);
       const options = {
@@ -92,9 +96,41 @@ const getMailById = async (req, res) => {
   }
 };
 
+const deleteMailById = async (req, res) => {
+  try {
+    const mailId = req.params.mailId;
+    const mail = await Mail.findById(mailId);
+    if (!mail.deleted && mail.receiver.toString() === req.user._id) {
+      const updatedMail = await Mail.findByIdAndUpdate(
+        mailId,
+        { deleted: true },
+        { new: true }
+      );
+      return res.json({
+        success: true,
+        message: "Deleted Mail At Receiver End",
+        mail: updatedMail,
+      });
+    } else if (mail.sender.toString() === req.user_id) {
+      await Mail.findByIdAndDelete(mailId);
+      return res.json({
+        success: true,
+        message: "Deleted Mail",
+      });
+    }
+    return res.json({ success: false, message: "Unable to delete Mail" });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Please try again" });
+  }
+};
+
 exports.controller = {
   createMail,
   getInboxMail,
   updateReadMail,
   getMailById,
+  deleteMailById,
 };
