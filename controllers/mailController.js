@@ -145,7 +145,7 @@ const deleteMailById = async (req, res) => {
         message: "Deleted Mail At Receiver End",
         mail: updatedMail,
       });
-    } else if (mail.sender.toString() === req.user_id) {
+    } else if (mail.sender.toString() === req.user._id) {
       await Mail.findByIdAndDelete(mailId);
       return res.json({
         success: true,
