@@ -100,6 +100,7 @@ const getSentMail = async (req, res) => {
 const updateReadMail = async (req, res) => {
   try {
     const mailId = req.params.mailId;
+    console.log(mailId);
     await Mail.findByIdAndUpdate(mailId, { isRead: true });
     res.json({
       success: true,
